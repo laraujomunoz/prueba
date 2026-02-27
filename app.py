@@ -1,95 +1,105 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Buscador de Placas", layout="wide")
-st.title("🔍 Consulta de Vehículos por Placa")
+st.set_page_config(page_title="Buscador de Placas o Recibo", layout="wide")
+st.title("🔍 Consulta de Vehículos por Placa o Recibo Oficial")
 
-# URL pública de Google Sheets (formato CSV)
+# URL pública de Google Sheets (ajústala si es necesario)
 SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRM2JtynG_FtyE4pbkLA1Fm5iWzxMPpx3-K6Y-oWSy_axDZ0-M-gHkBVfEDpUFc94Hpj6Svr1zbgCjs/pub?gid=95699436&single=true&output=csv"
 
-@st.cache_data(ttl=600)  # Cache por 10 minutos
+@st.cache_data(ttl=600)
 def cargar_datos():
-    """Carga los datos desde Google Sheets y prepara la columna de placa."""
-    try:
-        df = pd.read_csv(SHEET_URL)
-        if df.empty:
-            st.warning("El archivo de datos está vacío.")
-            return df
-        # Asumimos que la primera columna es la placa
-        col_placa = df.columns[0]
-        # Convertir a string, mayúsculas y limpiar espacios
+    df = pd.read_csv(SHEET_URL)
+    if not df.empty:
+        # Limpiar nombres de columnas (por si tienen espacios)
+        df.columns = df.columns.str.strip()
+        # Asegurar que la placa sea string y mayúscula
+        col_placa = df.columns[0]  # Asumimos que la primera columna es la placa
         df[col_placa] = df[col_placa].astype(str).str.upper().str.strip()
-        return df
-    except Exception as e:
-        st.error(f"Error al cargar los datos: {e}")
-        return pd.DataFrame()
+        # La columna de recibo oficial (columna I) puede ser tratada como string para búsqueda
+        # Ajusta el nombre si es diferente
+        # Por si acaso, identificamos la columna por posición (índice 8) si el nombre no es confiable
+    return df
 
-# Cargar datos
-df = cargar_datos()
+# Definir las columnas a mostrar (según tus índices: A,B,C,G,H,I,P,Q,R,S,T,U,V,W,X,Y,Z,AA)
+# Mapeamos los índices a nombres de columna (si los nombres son confiables) o usamos índices
+# Para simplificar, usaremos selección por posición con iloc
+# Pero necesitamos los nombres reales de las columnas en el DataFrame para poder filtrar
+# Vamos a obtener las columnas por nombre (si los nombres son consistentes)
+# Si prefieres usar índices, cambia la lógica.
 
-# Definir las columnas a mostrar (índices: A=0, B=1, C=2, G=6, H=7, I=8, P=15, Q=16, R=17, S=18, T=19, U=20, V=21, W=22, X=23, Y=24, Z=25, AA=26)
-indices_columnas = [0, 1, 2, 6, 7, 8, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+# Nombres esperados (ajusta según tu hoja real):
+# Col0: Placa, Col1: ?, Col2: ?, Col6: ?, Col7: ?, Col8: Recibo_Oficial, Col15:?, etc.
+# Es más seguro usar índices posicionales al final.
+# Pero para el filtrado necesitamos saber qué columna es la de recibo.
 
-# Obtener los nombres de las columnas según los índices (si existen)
-if not df.empty:
-    nombres_columnas = df.columns.tolist()
-    # Filtrar solo los índices que existen en el DataFrame
-    indices_validos = [i for i in indices_columnas if i < len(nombres_columnas)]
-    columnas_mostrar = [nombres_columnas[i] for i in indices_validos]
-else:
-    columnas_mostrar = []
+def buscar(placa_o_recibo, criterio, df):
+    """Filtra el DataFrame según el criterio y el valor."""
+    if criterio == "Placa":
+        col = df.columns[0]  # Primera columna
+        return df[df[col].astype(str).str.upper() == placa_o_recibo.upper().strip()]
+    else:  # Recibo Oficial
+        # Identificar la columna de recibo (columna I, índice 8)
+        # Puede tener nombre "Recibo_Oficial" o "Recibo Oficial" o similar.
+        # Buscamos por nombre que contenga "Recibo" o usamos posición.
+        # Opción 1: por posición (índice 8) - más robusto si los nombres cambian
+        col_recibo = df.columns[8]  # Novena columna (índice 8)
+        return df[df[col_recibo].astype(str).str.strip() == str(placa_o_recibo).strip()]
 
 # Interfaz de búsqueda
 with st.container():
-    col1, col2 = st.columns([3, 1])
+    col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
-        placa_input = st.text_input("Ingrese la placa a buscar:", placeholder="Ej: CMK035", key="placa").upper().strip()
+        criterio = st.radio("Buscar por:", ["Placa", "Recibo Oficial"], horizontal=True)
     with col2:
-        st.markdown("###")  # Espaciado vertical
-        buscar = st.button("Buscar", type="primary")
+        valor_busqueda = st.text_input("Ingrese el valor:", key="input_valor").strip()
+    with col3:
+        st.markdown("###")
+        buscar_clicked = st.button("Buscar", type="primary")
 
-# Resultados
-if buscar:
-    if placa_input == "":
-        st.warning("Por favor ingrese una placa.")
-    elif df.empty:
-        st.error("No hay datos cargados.")
+# Cargar datos (caché)
+df = cargar_datos()
+
+# Lógica de búsqueda
+if buscar_clicked and valor_busqueda:
+    if df.empty:
+        st.warning("No se pudieron cargar los datos.")
     else:
-        # Filtrar por placa (columna 0)
-        col_placa = df.columns[0]
-        resultados = df[df[col_placa] == placa_input]
-        
-        if resultados.empty:
-            st.warning(f"No se encontraron registros para la placa **{placa_input}**.")
-        else:
-            st.success(f"Se encontraron **{len(resultados)}** registro(s) para la placa **{placa_input}**.")
+        with st.spinner("Buscando..."):
+            resultados = buscar(valor_busqueda, criterio, df)
             
-            # Mostrar solo las columnas seleccionadas
-            if columnas_mostrar:
-                resultados_mostrar = resultados[columnas_mostrar].fillna('')  # Reemplaza NaN por vacío
+            if resultados.empty:
+                st.warning(f"No se encontraron registros para **{valor_busqueda}** en **{criterio}**.")
+            else:
+                st.success(f"Se encontraron **{len(resultados)}** registro(s).")
+                
+                # Mostrar solo las columnas seleccionadas (por índice: 0,1,2,6,7,8,15,16,... hasta 26)
+                # Como no tenemos nombres confiables, usaremos iloc para seleccionar por posición
+                # Definimos los índices de columna que queremos mostrar (0-based)
+                indices_mostrar = [0,1,2,6,7,8,15,16,17,18,19,20,21,22,23,24,25,26]
+                
+                # Asegurarse de que los índices existen en el DataFrame
+                max_index = len(df.columns) - 1
+                indices_validos = [i for i in indices_mostrar if i <= max_index]
+                
+                # Seleccionar esas columnas por posición
+                resultados_mostrar = resultados.iloc[:, indices_validos]
+                
+                # Reemplazar NaN por vacío
+                resultados_mostrar = resultados_mostrar.fillna('')
+                
+                # Mostrar tabla
                 st.dataframe(resultados_mostrar, use_container_width=True)
                 
-                # Botón de descarga
-                #csv = resultados_mostrar.to_csv(index=False).encode('utf-8')
-                #st.download_button(
-                    #label="📥 Descargar resultados como CSV",
-                    #data=csv,
-                    #file_name=f"resultados_{placa_input}.csv",
-                    #mime="text/csv"
-                #)
-            else:
-                st.error("No se pudieron determinar las columnas a mostrar.")
-else:
-    # Mensaje inicial
-    if not df.empty:
-        st.info("Ingrese una placa y haga clic en Buscar.")
-    else:
-        st.stop()
+                # (Opcional) Podríamos poner un botón de descarga si se desea, pero lo has quitado
+                # st.download_button(...)  # Comentado o eliminado
 
-# Mostrar vista previa opcional (expandible)
+# Vista previa de datos (opcional)
 with st.expander("Ver vista previa de los datos (primeras 100 filas)"):
     if not df.empty:
-        st.dataframe(df[columnas_mostrar].head(100) if columnas_mostrar else df.head(100))
-        st.caption(f"Total de registros en la base: {len(df)}")
-        #"Actualización del código con columnas específicas"
-
+        # Mostrar primeras 100 filas con las mismas columnas seleccionadas (opcional)
+        # O podemos mostrar todo con fillna
+        preview = df.head(100).fillna('')
+        st.dataframe(preview, use_container_width=True)
+    else:
+        st.info("No hay datos para mostrar.")
