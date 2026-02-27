@@ -66,17 +66,17 @@ if buscar:
             
             # Mostrar solo las columnas seleccionadas
             if columnas_mostrar:
-                resultados_mostrar = resultados[columnas_mostrar]
+                resultados_mostrar = resultados[columnas_mostrar].fillna('')  # Reemplaza NaN por vacío
                 st.dataframe(resultados_mostrar, use_container_width=True)
                 
                 # Botón de descarga
-                csv = resultados_mostrar.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Descargar resultados como CSV",
-                    data=csv,
-                    file_name=f"resultados_{placa_input}.csv",
-                    mime="text/csv"
-                )
+                #csv = resultados_mostrar.to_csv(index=False).encode('utf-8')
+                #st.download_button(
+                    #label="📥 Descargar resultados como CSV",
+                    #data=csv,
+                    #file_name=f"resultados_{placa_input}.csv",
+                    #mime="text/csv"
+                #)
             else:
                 st.error("No se pudieron determinar las columnas a mostrar.")
 else:
@@ -92,3 +92,4 @@ with st.expander("Ver vista previa de los datos (primeras 100 filas)"):
         st.dataframe(df[columnas_mostrar].head(100) if columnas_mostrar else df.head(100))
         st.caption(f"Total de registros en la base: {len(df)}")
         #"Actualización del código con columnas específicas"
+
