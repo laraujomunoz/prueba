@@ -9,4 +9,4 @@ AGENTS = [
     "Pedro"
 ]
 
-ADMIN_PASSWORD = "Uni1122"
+ADMIN_PASSWORD = "admin1234"
