@@ -72,7 +72,7 @@ st.sidebar.info("Sistema de turnos estudiantes")
 # ESTUDIANTES
 # ---------------------------------
 
-if tipo == "Estudiante":
+
 
     st.title("Solicitar turno")
 
@@ -117,3 +117,4 @@ if tipo == "Estudiante":
 # ---------------------------------
 # ADMIN
 # ---------------------------------
+
