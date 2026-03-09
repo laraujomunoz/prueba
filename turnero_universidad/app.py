@@ -74,15 +74,15 @@ st.sidebar.info("Sistema de turnos estudiantes")
 
 
 
-    st.title("Solicitar turno")
+st.title("Solicitar turno")
 
-    codigo = st.text_input("Código estudiante")
-    nombre = st.text_input("Nombre")
-    carrera = st.text_input("Carrera")
+codigo = st.text_input("Código estudiante")
+nombre = st.text_input("Nombre")
+carrera = st.text_input("Carrera")
 
-    grupo = st.selectbox("Grupo",["1","2"])
+grupo = st.selectbox("Grupo",["1","2"])
 
-    necesidad = st.text_area("Consulta")
+necesidad = st.text_area("Consulta")
 
     if st.button("Solicitar turno"):
 
@@ -117,4 +117,5 @@ st.sidebar.info("Sistema de turnos estudiantes")
 # ---------------------------------
 # ADMIN
 # ---------------------------------
+
 
