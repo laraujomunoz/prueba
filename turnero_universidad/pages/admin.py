@@ -32,28 +32,34 @@ else:
 
     if st.button("Llamar siguiente turno"):
 
-        c = conn.cursor()
+    fecha = datetime.today().strftime("%Y-%m-%d")
 
-        c.execute("""
-        SELECT id FROM turnos
-        WHERE estado='espera'
-        ORDER BY numero ASC
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT hora, asesora, nombre, necesidad
+        FROM turnos
+        WHERE fecha=?
+        ORDER BY hora
         LIMIT 1
-        """)
+    """, (fecha,))
 
-        turno = c.fetchone()
+    turno = cursor.fetchone()
 
-        if turno:
+    if turno:
 
-            c.execute(
-                "UPDATE turnos SET estado='atendido' WHERE id=?",
-                (turno[0],)
-            )
+        st.success("Turno actual")
 
-            conn.commit()
+        st.info(f"""
+Hora: {turno[0]}
 
-            st.success("Turno llamado")
+Asesora: {turno[1]}
 
-        else:
+Estudiante: {turno[2]}
 
-            st.info("No hay turnos pendientes")
+Consulta: {turno[3]}
+""")
+
+    else:
+
+        st.warning("No hay turnos")
