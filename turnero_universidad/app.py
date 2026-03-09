@@ -73,49 +73,42 @@ st.sidebar.info("Sistema de turnos estudiantes")
 # ---------------------------------
 
 
-
 st.title("Solicitar turno")
 
 codigo = st.text_input("Código estudiante")
 nombre = st.text_input("Nombre")
 carrera = st.text_input("Carrera")
 
-grupo = st.selectbox("Grupo",["1","2"])
+grupo = st.selectbox("Grupo", ["1", "2"])
 
 necesidad = st.text_area("Consulta")
 
-    if st.button("Solicitar turno"):
+if st.button("Solicitar turno"):
 
-        datos = {
+    datos = {
+        "codigo": codigo,
+        "nombre": nombre,
+        "carrera": carrera,
+        "grupo": grupo,
+        "necesidad": necesidad
+    }
 
-            "codigo":codigo,
-            "nombre":nombre,
-            "carrera":carrera,
-            "grupo":grupo,
-            "necesidad":necesidad
+    hora, asesora = asignar_turno(datos)
 
-        }
+    if hora is None:
+        st.error("Turnos agotados")
+    else:
+        st.success("Turno asignado")
 
-        hora,asesora = asignar_turno(datos)
+        st.info(f"""
+Hora: {hora}
 
-        if hora is None:
-
-            st.error("Turnos agotados")
-
-        else:
-
-            st.success("Turno asignado")
-
-            st.info(f"""
-
-            Hora: {hora}
-
-            Te atenderá: {asesora}
-
-            """)
+Te atenderá: {asesora}
+""")
 
 # ---------------------------------
 # ADMIN
 # ---------------------------------
+
 
 
