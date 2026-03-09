@@ -66,12 +66,7 @@ def asignar_turno(datos):
 
 # ---------------------------------
 
-st.sidebar.title("Acceso")
-
-tipo = st.sidebar.selectbox(
-    "Tipo usuario",
-    ["Estudiante","Administrador"]
-)
+st.sidebar.info("Sistema de turnos estudiantes")
 
 # ---------------------------------
 # ESTUDIANTES
@@ -122,63 +117,3 @@ if tipo == "Estudiante":
 # ---------------------------------
 # ADMIN
 # ---------------------------------
-
-if tipo == "Administrador":
-
-    st.title("Panel de turnos")
-
-    fecha = datetime.today().strftime("%Y-%m-%d")
-
-    df = pd.read_sql_query(
-
-        "SELECT * FROM turnos WHERE fecha=? ORDER BY hora",
-
-        conn,
-
-        params=(fecha,)
-
-    )
-
-    if len(df)==0:
-
-        st.write("No hay turnos")
-
-    else:
-
-        ahora = datetime.now().strftime("%H:%M")
-
-        for i,row in df.iterrows():
-
-            if row["hora"] == ahora:
-
-                st.markdown(
-
-                f"""
-
-                <div style="background-color:#ffcccc;padding:15px">
-
-                <b>ATENDIENDO AHORA</b><br>
-
-                {row['hora']} - {row['asesora']}<br>
-
-                {row['nombre']}<br>
-
-                {row['necesidad']}
-
-                </div>
-
-                """,
-
-                unsafe_allow_html=True
-
-                )
-
-            else:
-
-                st.write(
-
-                    row["hora"],
-                    row["asesora"],
-                    row["nombre"]
-
-                )
