@@ -39,7 +39,14 @@ else:
 
     st.subheader("Turnos")
 
-    st.dataframe(df)
+    def colorear_estado(val):
+    if val == "pendiente":
+        return "background-color: #fff3cd"
+    elif val == "atendido":
+        return "background-color: #d4edda"
+    return ""
+
+st.dataframe(df.style.applymap(colorear_estado, subset=["estado"]))
 
     # ---------------------------------
     # BOTON LLAMAR TURNO
