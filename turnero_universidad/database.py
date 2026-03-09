@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def get_connection():
 
     conn = sqlite3.connect(
@@ -14,6 +15,7 @@ def get_connection():
 
 def crear_tablas(conn):
 
+    # Crear tabla si no existe
     conn.execute("""
 
     CREATE TABLE IF NOT EXISTS turnos(
@@ -35,6 +37,7 @@ def crear_tablas(conn):
 
     # --------------------------------
     # Verificar si la columna estado existe
+    # (para bases creadas antes)
     # --------------------------------
 
     cursor = conn.cursor()
@@ -50,3 +53,4 @@ def crear_tablas(conn):
         )
 
     conn.commit()
+
