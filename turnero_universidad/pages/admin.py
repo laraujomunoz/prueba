@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
-from database import connect
+from database import get_connection
 from config import ADMIN_PASSWORD
+
 
 st.title("Panel Administrador")
 
@@ -21,7 +22,7 @@ if not st.session_state.login:
 
 else:
 
-    conn = connect()
+    conn = get_connection()
 
     df = pd.read_sql_query("SELECT * FROM turnos", conn)
 
