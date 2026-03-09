@@ -41,24 +41,25 @@ def asignar_turno(datos):
 
     cursor.execute("""
 
-    INSERT INTO turnos(
-        codigo,nombre,carrera,grupo,
-        necesidad,hora,asesora,fecha
-    )
+INSERT INTO turnos(
+    codigo,nombre,carrera,grupo,
+    necesidad,hora,asesora,fecha,estado
+)
 
-    VALUES(?,?,?,?,?,?,?,?)
+VALUES(?,?,?,?,?,?,?,?,?)
 
-    """,
-    (
-        datos["codigo"],
-        datos["nombre"],
-        datos["carrera"],
-        datos["grupo"],
-        datos["necesidad"],
-        hora,
-        asesora,
-        fecha
-    ))
+""",
+(
+    datos["codigo"],
+    datos["nombre"],
+    datos["carrera"],
+    datos["grupo"],
+    datos["necesidad"],
+    hora,
+    asesora,
+    fecha,
+    "pendiente"
+))
 
     conn.commit()
 
@@ -109,6 +110,7 @@ Te atenderá: {asesora}
 # ---------------------------------
 # ADMIN
 # ---------------------------------
+
 
 
 
