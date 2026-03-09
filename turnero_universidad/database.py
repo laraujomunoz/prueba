@@ -26,10 +26,27 @@ def crear_tablas(conn):
         necesidad TEXT,
         hora TEXT,
         asesora TEXT,
-        fecha TEXT
+        fecha TEXT,
+        estado TEXT DEFAULT 'pendiente'
 
     )
 
     """)
+
+    # --------------------------------
+    # Verificar si la columna estado existe
+    # --------------------------------
+
+    cursor = conn.cursor()
+
+    cursor.execute("PRAGMA table_info(turnos)")
+
+    columnas = [col[1] for col in cursor.fetchall()]
+
+    if "estado" not in columnas:
+
+        conn.execute(
+            "ALTER TABLE turnos ADD COLUMN estado TEXT DEFAULT 'pendiente'"
+        )
 
     conn.commit()
