@@ -7,13 +7,13 @@ from config import ADMIN_PASSWORD
 
 st.title("Panel Administrador")
 
+# ---------------------------------
+# CONTROL DE LOGIN
+# ---------------------------------
+
 if "login" not in st.session_state:
     st.session_state.login = False
 
-
-# ---------------------------------
-# LOGIN ADMIN
-# ---------------------------------
 
 if not st.session_state.login:
 
@@ -23,6 +23,7 @@ if not st.session_state.login:
 
         if password == ADMIN_PASSWORD:
             st.session_state.login = True
+            st.rerun()
         else:
             st.error("Contraseña incorrecta")
 
@@ -37,19 +38,26 @@ else:
 
     df = pd.read_sql_query("SELECT * FROM turnos", conn)
 
-    st.subheader("Turnos")
+    st.subheader("Turnos registrados")
+
+    # -------- COLORES POR ESTADO --------
 
     def colorear_estado(val):
-    if val == "pendiente":
-        return "background-color: #fff3cd"
-    elif val == "atendido":
-        return "background-color: #d4edda"
-    return ""
+        if val == "pendiente":
+            return "background-color: #fff3cd"
+        elif val == "atendido":
+            return "background-color: #d4edda"
+        return ""
 
-st.dataframe(df.style.applymap(colorear_estado, subset=["estado"]))
+    if not df.empty and "estado" in df.columns:
+        st.dataframe(df.style.applymap(colorear_estado, subset=["estado"]))
+    else:
+        st.dataframe(df)
+
+    st.divider()
 
     # ---------------------------------
-    # BOTON LLAMAR TURNO
+    # BOTON LLAMAR SIGUIENTE TURNO
     # ---------------------------------
 
     if st.button("Llamar siguiente turno"):
@@ -72,7 +80,6 @@ st.dataframe(df.style.applymap(colorear_estado, subset=["estado"]))
 
             turno_id = turno[0]
 
-            # marcar turno como atendido
             cursor.execute("""
                 UPDATE turnos
                 SET estado='atendido'
@@ -81,7 +88,7 @@ st.dataframe(df.style.applymap(colorear_estado, subset=["estado"]))
 
             conn.commit()
 
-            st.success("Turno actual")
+            st.success("Turno llamado")
 
             st.info(f"""
 Hora: {turno[1]}
