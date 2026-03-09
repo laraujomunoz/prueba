@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 from database import get_connection
 from config import ADMIN_PASSWORD
 
@@ -8,6 +9,11 @@ st.title("Panel Administrador")
 
 if "login" not in st.session_state:
     st.session_state.login = False
+
+
+# ---------------------------------
+# LOGIN ADMIN
+# ---------------------------------
 
 if not st.session_state.login:
 
@@ -20,6 +26,11 @@ if not st.session_state.login:
         else:
             st.error("Contraseña incorrecta")
 
+
+# ---------------------------------
+# PANEL ADMIN
+# ---------------------------------
+
 else:
 
     conn = get_connection()
@@ -30,36 +41,51 @@ else:
 
     st.dataframe(df)
 
+    # ---------------------------------
+    # BOTON LLAMAR TURNO
+    # ---------------------------------
+
     if st.button("Llamar siguiente turno"):
 
-    fecha = datetime.today().strftime("%Y-%m-%d")
+        fecha = datetime.today().strftime("%Y-%m-%d")
 
-    cursor = conn.cursor()
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT hora, asesora, nombre, necesidad
-        FROM turnos
-        WHERE fecha=?
-        ORDER BY hora
-        LIMIT 1
-    """, (fecha,))
+        cursor.execute("""
+            SELECT id, hora, asesora, nombre, necesidad
+            FROM turnos
+            WHERE fecha=? AND estado='pendiente'
+            ORDER BY hora
+            LIMIT 1
+        """, (fecha,))
 
-    turno = cursor.fetchone()
+        turno = cursor.fetchone()
 
-    if turno:
+        if turno:
 
-        st.success("Turno actual")
+            turno_id = turno[0]
 
-        st.info(f"""
-Hora: {turno[0]}
+            # marcar turno como atendido
+            cursor.execute("""
+                UPDATE turnos
+                SET estado='atendido'
+                WHERE id=?
+            """, (turno_id,))
 
-Asesora: {turno[1]}
+            conn.commit()
 
-Estudiante: {turno[2]}
+            st.success("Turno actual")
 
-Consulta: {turno[3]}
+            st.info(f"""
+Hora: {turno[1]}
+
+Asesora: {turno[2]}
+
+Estudiante: {turno[3]}
+
+Consulta: {turno[4]}
 """)
 
-    else:
+        else:
 
-        st.warning("No hay turnos")
+            st.warning("No hay turnos pendientes")
