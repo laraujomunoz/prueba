@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 st.set_page_config(page_title="Buscador de Placas o Recibo", layout="wide")
-st.title("🔍 Consulta de Vehículos por Placa o Recibo Oficial")
+st.title("🔍 APLICACION VIEJA ==== Consulta de Vehículos por Placa o Recibo Oficial")
 
 # URL pública de Google Sheets (ajústala si es necesario)
 SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKGjA4X6O256blKvLFYHp9ojj34ePBNQnwj1K7icTqVDCY8WSO05FGG2Y0BM4zMboMj8cWQI4OAAL0/pub?output=csv"
