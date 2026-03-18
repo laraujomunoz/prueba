@@ -77,7 +77,7 @@ if buscar_clicked and valor_busqueda:
                 # Como no tenemos nombres confiables, usaremos iloc para seleccionar por posición
                 # Definimos los índices de columna que queremos mostrar (0-based)
                 indices_mostrar = [0,1,2,3,4,5,6,7,8,9,10,11]
-                [0,1,2,6,7,8,15,16,17,18,19,20,21,22,23,24,25,26]
+              
                 # Asegurarse de que los índices existen en el DataFrame
                 max_index = len(df.columns) - 1
                 indices_validos = [i for i in indices_mostrar if i <= max_index]
