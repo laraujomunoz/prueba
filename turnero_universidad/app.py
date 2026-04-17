@@ -38,7 +38,7 @@ def asignar_turno(datos):
 
     cursor.execute("""
     INSERT INTO turnos(
-        codigo,nombre,carrera,grupo,
+        codigo,nombre,usuario,carrera,grupo,
         necesidad,hora,asesora,fecha,estado
     )
     VALUES(?,?,?,?,?,?,?,?,?)
@@ -46,6 +46,7 @@ def asignar_turno(datos):
     (
         datos["codigo"],
         datos["nombre"],
+        datos["usuario"],
         datos["carrera"],
         datos["grupo"],
         datos["necesidad"],
@@ -99,10 +100,11 @@ if st.button("Solicitar turno"):
     datos = {
         "codigo": codigo,
         "nombre": nombre,
+        "usuario": usuario,  # 👈 nuevo campo (por ahora no se guarda en BD)
         "carrera": carrera,
         "grupo": grupo,
-        "necesidad": necesidad,
-        "usuario": usuario  # 👈 nuevo campo (por ahora no se guarda en BD)
+        "necesidad": necesidad
+        
     }
 
     hora, asesora = asignar_turno(datos)
