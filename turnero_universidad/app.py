@@ -36,34 +36,37 @@ def asignar_turno(datos):
     asesora = ASESORAS[usados % len(ASESORAS)]
     hora = HORARIOS[bloque].strftime("%H:%M")
 
-   cursor.execute("""
-INSERT INTO turnos(
-    codigo,
-    nombre,
-    usuario,
-    carrera,
-    grupo,
-    necesidad,
-    hora,
-    asesora,
-    fecha,
-    estado
-)
-VALUES(?,?,?,?,?,?,?,?,?,?)
-""",
-(
-    datos["codigo"],
-    datos["nombre"],
-    datos["usuario"],
-    datos["carrera"],
-    datos["grupo"],
-    datos["necesidad"],
-    hora,
-    asesora,
-    fecha,
-    "pendiente"
-))
+    cursor.execute("""
+    INSERT INTO turnos(
+        codigo,
+        nombre,
+        usuario,
+        carrera,
+        grupo,
+        necesidad,
+        hora,
+        asesora,
+        fecha,
+        estado
+    )
+    VALUES(?,?,?,?,?,?,?,?,?,?)
+    """,
+    (
+        datos["codigo"],
+        datos["nombre"],
+        datos["usuario"],
+        datos["carrera"],
+        datos["grupo"],
+        datos["necesidad"],
+        hora,
+        asesora,
+        fecha,
+        "pendiente"
+    ))
 
+    conn.commit()
+
+    return hora, asesora
     conn.commit()
 
     return hora, asesora
