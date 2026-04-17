@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, time
 
-ASESORAS = ["Lina","Lorena","Andrea","Ximena"]
+ASESORAS = ["Angela", "Graciela", "Lorena", "Lina"]
 
 INICIO = time(7,0)
 FIN = time(17,0)
