@@ -50,7 +50,8 @@ else:
         return ""
 
     if not df.empty and "estado" in df.columns:
-        st.dataframe(df.style.applymap(colorear_estado, subset=["estado"]))
+     
+        st.dataframe(df.style.map(colorear_estado, subset=["estado"]))
     else:
         st.dataframe(df)
 
