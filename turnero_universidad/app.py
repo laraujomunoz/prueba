@@ -30,40 +30,34 @@ def asignar_turno(datos):
     total = len(HORARIOS) * len(ASESORAS)
 
     if usados >= total:
-
-        return None,None
+        return None, None
 
     bloque = usados // len(ASESORAS)
-
     asesora = ASESORAS[usados % len(ASESORAS)]
-
     hora = HORARIOS[bloque].strftime("%H:%M")
 
     cursor.execute("""
-
-INSERT INTO turnos(
-    codigo,nombre,carrera,grupo,
-    necesidad,hora,asesora,fecha,estado
-)
-
-VALUES(?,?,?,?,?,?,?,?,?)
-
-""",
-(
-    datos["codigo"],
-    datos["nombre"],
-    datos["carrera"],
-    datos["grupo"],
-    datos["necesidad"],
-    hora,
-    asesora,
-    fecha,
-    "pendiente"
-))
+    INSERT INTO turnos(
+        codigo,nombre,carrera,grupo,
+        necesidad,hora,asesora,fecha,estado
+    )
+    VALUES(?,?,?,?,?,?,?,?,?)
+    """,
+    (
+        datos["codigo"],
+        datos["nombre"],
+        datos["carrera"],
+        datos["grupo"],
+        datos["necesidad"],
+        hora,
+        asesora,
+        fecha,
+        "pendiente"
+    ))
 
     conn.commit()
 
-    return hora,asesora
+    return hora, asesora
 
 # ---------------------------------
 
@@ -73,14 +67,30 @@ st.sidebar.info("Sistema de turnos estudiantes")
 # ESTUDIANTES
 # ---------------------------------
 
-
 st.title("Solicitar turno")
 
 codigo = st.text_input("Código estudiante")
 nombre = st.text_input("Nombre")
-carrera = st.text_input("Carrera")
 
-grupo = st.selectbox("Grupo", ["1", "2"])
+# ✅ NUEVO: tipo de usuario
+usuario = st.selectbox("Tipo de usuario", ["Estudiante", "Docente"])
+
+# ✅ NUEVO: lista de carreras
+carreras = [
+    "Ingeniería de Sistemas",
+    "Administración Financiera",
+    "Contaduría Pública",
+    "Licenciatura en Educación Infantil",
+    "Licenciatura en Literatura y Lengua Castellana",
+    "Licenciatura en Educación Artística",
+    "Licenciatura en Ciencias Naturales y Educación Ambiental",
+    "Tecnología en Regencia de Farmacia"
+]
+
+carrera = st.selectbox("Carrera", carreras)
+
+# ✅ ACTUALIZADO: más grupos
+grupo = st.selectbox("Grupo", ["1", "2", "3", "4", "5"])
 
 necesidad = st.text_area("Consulta")
 
@@ -91,7 +101,8 @@ if st.button("Solicitar turno"):
         "nombre": nombre,
         "carrera": carrera,
         "grupo": grupo,
-        "necesidad": necesidad
+        "necesidad": necesidad,
+        "usuario": usuario  # 👈 nuevo campo (por ahora no se guarda en BD)
     }
 
     hora, asesora = asignar_turno(datos)
@@ -107,6 +118,9 @@ Hora: {hora}
 Te atenderá: {asesora}
 """)
 
+# ---------------------------------
+# ADMIN
+# ---------------------------------
 # ---------------------------------
 # ADMIN
 # ---------------------------------
