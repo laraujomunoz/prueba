@@ -23,6 +23,7 @@ def crear_tablas(conn):
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         codigo TEXT,
         nombre TEXT,
+        usuario TEXT,
         carrera TEXT,
         grupo TEXT,
         necesidad TEXT,
