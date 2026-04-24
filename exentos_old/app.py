@@ -100,6 +100,7 @@ with st.expander("Ver vista previa de los datos (primeras 100 filas)"):
         # Mostrar primeras 100 filas con las mismas columnas seleccionadas (opcional)
         # O podemos mostrar todo con fillna
         preview = df.head(100).fillna('')
-        st.dataframe(preview, use_container_width=stretch)
+       
+        st.dataframe(preview, width="stretch")
     else:
         st.info("No hay datos para mostrar.")
